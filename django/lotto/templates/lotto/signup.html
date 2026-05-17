@@ -1,0 +1,7 @@
+{% extends 'lotto/base.html' %}
+{% block content %}
+<h1>로그인 / 회원가입</h1>
+<form method="post">{% csrf_token %}{{ form.as_p }}
+  <button type="submit">제출</button>
+</form>
+{% endblock %}

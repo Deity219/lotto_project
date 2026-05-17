@@ -1,0 +1,17 @@
+{% extends 'lotto/base.html' %}
+{% block content %}
+<h1>당첨 확인</h1>
+<table border="1">
+<tr><th>회차</th><th>내 번호</th><th>당첨번호</th><th>등수</th><th>당첨금</th></tr>
+{% for t in tickets %}
+<tr>
+  <td>{{ t.draw_round.round_no }}</td>
+  <td>{% for n in t.numbers %}{{ n }} {% endfor %}</td>
+  <td>{% for n in t.draw_round.winning_numbers %}{{ n }} {% endfor %}
+      +B{{ t.draw_round.bonus }}</td>
+  <td>{% if t.rank %}{{ t.rank }}등{% else %}낙첨{% endif %}</td>
+  <td>{{ t.prize }}원</td>
+</tr>
+{% endfor %}
+</table>
+{% endblock %}

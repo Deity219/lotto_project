@@ -1,0 +1,19 @@
+{% extends 'lotto/base.html' %}
+{% block content %}
+<h1>추첨 실행</h1>
+<h2>미추첨 회차</h2>
+{% for r in pending %}
+<form method="post">{% csrf_token %}
+  <input type="hidden" name="round_id" value="{{ r.id }}">
+  {{ r.round_no }}회 <button type="submit">추첨 실행</button>
+</form>
+{% endfor %}
+<h2>최근 추첨 결과</h2>
+<ul>
+{% for r in done %}
+<li>{{ r.round_no }}회 -
+    {% for n in r.winning_numbers %}{{ n }} {% endfor %}
+    + B{{ r.bonus }} ({{ r.draw_date|date:"Y-m-d H:i" }})</li>
+{% endfor %}
+</ul>
+{% endblock %}

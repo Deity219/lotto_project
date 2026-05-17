@@ -1,0 +1,9 @@
+{% extends 'lotto/base.html' %}
+{% block content %}
+<h1>관리자 대시보드</h1>
+<ul>
+  <li><a href="{% url 'lotto:admin_sales' %}">판매 내역</a></li>
+  <li><a href="{% url 'lotto:admin_draw' %}">추첨 실행</a></li>
+  <li><a href="{% url 'lotto:admin_winners' %}">당첨 내역</a></li>
+</ul>
+{% endblock %}

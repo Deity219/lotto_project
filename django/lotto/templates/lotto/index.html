@@ -1,0 +1,13 @@
+{% extends 'lotto/base.html' %}
+{% block content %}
+<h1>6/45 Lotto</h1>
+{% if latest %}
+  <h2>최근 추첨 결과 ({{ latest.round_no }}회)</h2>
+  <p>당첨 번호:
+    {% for n in latest.winning_numbers %}<b>{{ n }}</b> {% endfor %}
+    + 보너스 <b>{{ latest.bonus }}</b>
+  </p>
+{% else %}
+  <p>아직 추첨된 회차가 없습니다.</p>
+{% endif %}
+{% endblock %}

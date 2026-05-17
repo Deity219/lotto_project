@@ -1,0 +1,22 @@
+{% extends 'lotto/base.html' %}
+{% block content %}
+<h1>복권 구매 - {{ current.round_no }}회</h1>
+{% if error %}<p style="color:red">{{ error }}</p>{% else %}
+
+<h2>수동 구매</h2>
+<form method="post">{% csrf_token %}
+  <input type="hidden" name="mode" value="manual">
+  {% for i in "123456" %}
+    <input type="number" name="n{{ i }}" min="1" max="45" required>
+  {% endfor %}
+  <button type="submit">수동 구매</button>
+</form>
+
+<h2>자동 구매</h2>
+<form method="post">{% csrf_token %}
+  <input type="hidden" name="mode" value="auto">
+  <label>매수: <input type="number" name="count" min="1" max="5" value="1"></label>
+  <button type="submit">자동 구매</button>
+</form>
+{% endif %}
+{% endblock %}

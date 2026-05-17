@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="ko">
+<head><meta charset="utf-8"><title>6/45 Lotto</title></head>
+<body>
+<nav>
+  <a href="{% url 'lotto:index' %}">홈</a> |
+  {% if user.is_authenticated %}
+    <a href="{% url 'lotto:buy' %}">구매</a> |
+    <a href="{% url 'lotto:my_tickets' %}">내 티켓</a> |
+    <a href="{% url 'lotto:check' %}">당첨확인</a> |
+    {% if user.is_staff %}
+      <a href="{% url 'lotto:admin_dashboard' %}">관리자</a> |
+    {% endif %}
+    {{ user.username }} (<a href="{% url 'lotto:logout' %}">로그아웃</a>)
+  {% else %}
+    <a href="{% url 'lotto:login' %}">로그인</a> |
+    <a href="{% url 'lotto:signup' %}">회원가입</a>
+  {% endif %}
+</nav>
+<hr>
+{% block content %}{% endblock %}
+</body>
+</html>

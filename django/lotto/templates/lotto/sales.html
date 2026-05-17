@@ -1,0 +1,11 @@
+{% extends 'lotto/base.html' %}
+{% block content %}
+<h1>판매 내역</h1>
+<table border="1">
+<tr><th>회차</th><th>판매 매수</th><th>매출(원)</th></tr>
+{% for r in rows %}
+<tr><td>{{ r.draw_round__round_no }}</td>
+    <td>{{ r.cnt }}</td><td>{{ r.revenue }}</td></tr>
+{% endfor %}
+</table>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends 'lotto/base.html' %}
+{% block content %}
+<h1>내 티켓</h1>
+<table border="1">
+<tr><th>회차</th><th>방식</th><th>번호</th><th>구매일</th></tr>
+{% for t in tickets %}
+<tr>
+  <td>{{ t.draw_round.round_no }}</td>
+  <td>{{ t.get_pick_type_display }}</td>
+  <td>{% for n in t.numbers %}{{ n }} {% endfor %}</td>
+  <td>{{ t.purchased_at|date:"Y-m-d H:i" }}</td>
+</tr>
+{% endfor %}
+</table>
+{% endblock %}
