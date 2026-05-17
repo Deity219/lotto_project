@@ -100,3 +100,9 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = 'static/'
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGIN_URL = 'lotto:login'
+LOGIN_REDIRECT_URL = 'lotto:index'    # 로그인 후 홈으로
+LOGOUT_REDIRECT_URL = 'lotto:index'   # 로그아웃 후 홈으로

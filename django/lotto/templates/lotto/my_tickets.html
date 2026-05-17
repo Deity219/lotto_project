@@ -1,15 +1,21 @@
 {% extends 'lotto/base.html' %}
 {% block content %}
-<h1>내 티켓</h1>
-<table border="1">
-<tr><th>회차</th><th>방식</th><th>번호</th><th>구매일</th></tr>
-{% for t in tickets %}
-<tr>
-  <td>{{ t.draw_round.round_no }}</td>
-  <td>{{ t.get_pick_type_display }}</td>
-  <td>{% for n in t.numbers %}{{ n }} {% endfor %}</td>
-  <td>{{ t.purchased_at|date:"Y-m-d H:i" }}</td>
-</tr>
-{% endfor %}
-</table>
+<div class="card">
+  <h1><span class="emoji">🎫</span> 내 티켓</h1>
+  <table>
+    <tr><th>회차</th><th>방식</th><th>번호</th><th>구매일</th></tr>
+    {% for t in tickets %}
+    <tr>
+      <td>{{ t.draw_round.round_no }}회</td>
+      <td>{{ t.get_pick_type_display }}</td>
+      <td>
+        {% for n in t.numbers %}
+          <span class="ball {% if n <= 10 %}ball-1{% elif n <= 20 %}ball-2{% elif n <= 30 %}ball-3{% elif n <= 40 %}ball-4{% else %}ball-5{% endif %}" style="width:32px; height:32px; font-size:14px;">{{ n }}</span>
+        {% endfor %}
+      </td>
+      <td>{{ t.purchased_at|date:"Y-m-d H:i" }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
 {% endblock %}

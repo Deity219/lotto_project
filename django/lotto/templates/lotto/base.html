@@ -1,23 +1,298 @@
 <!doctype html>
 <html lang="ko">
-<head><meta charset="utf-8"><title>6/45 Lotto</title></head>
+<head>
+<meta charset="utf-8">
+<title>6/45 Lotto</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    color: #fff;
+    min-height: 100vh;
+    padding-bottom: 50px;
+  }
+
+  /* 상단 네비 */
+  nav {
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(10px);
+    padding: 18px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+    border-bottom: 2px solid #ffd700;
+  }
+  .logo {
+    font-size: 28px;
+    font-weight: bold;
+    background: linear-gradient(45deg, #ffd700, #ffed4e);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  nav a {
+    color: #fff;
+    text-decoration: none;
+    margin: 0 10px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    transition: all 0.3s;
+  }
+  nav a:hover {
+    background: rgba(255, 215, 0, 0.2);
+    color: #ffd700;
+  }
+  .nav-user { font-size: 14px; color: #ffd700; }
+  .nav-admin {
+    background: linear-gradient(45deg, #e94560, #c92a3f);
+    padding: 8px 16px;
+    border-radius: 20px;
+    color: #fff !important;
+  }
+
+  /* 메인 컨테이너 */
+  .container {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 0 20px;
+  }
+  .card {
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 30px;
+    margin-bottom: 24px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  }
+
+  h1 {
+    font-size: 32px;
+    margin-bottom: 24px;
+    background: linear-gradient(45deg, #ffd700, #ffed4e);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  h2 {
+    font-size: 22px;
+    margin: 20px 0 16px;
+    color: #ffd700;
+    border-left: 4px solid #ffd700;
+    padding-left: 12px;
+  }
+
+  h1 .emoji, h2 .emoji {
+  -webkit-text-fill-color: initial;
+  background: none;
+  -webkit-background-clip: initial;
+  background-clip: initial;
+}
+
+  /* 로또볼 (당첨번호 표시) */
+  .ball {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    margin: 4px;
+    font-weight: bold;
+    font-size: 18px;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  }
+  .ball-1 { background: linear-gradient(135deg, #fbc531, #e1b12c); }   /* 1~10 노랑 */
+  .ball-2 { background: linear-gradient(135deg, #4cd137, #44bd32); }   /* 11~20 초록 */
+  .ball-3 { background: linear-gradient(135deg, #e84118, #c23616); }   /* 21~30 빨강 */
+  .ball-4 { background: linear-gradient(135deg, #487eb0, #40739e); }   /* 31~40 파랑 */
+  .ball-5 { background: linear-gradient(135deg, #353b48, #2f3640); }   /* 41~45 검정 */
+  .ball-bonus {
+    background: linear-gradient(135deg, #e94560, #c92a3f);
+    border: 3px solid #fff;
+  }
+
+  /* 폼 */
+  form { margin-top: 16px; }
+  label { display: block; margin: 12px 0 6px; color: #ffd700; font-weight: 500; }
+  input[type=text], input[type=password], input[type=number], input[type=email] {
+    width: 100%;
+    padding: 12px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 15px;
+  }
+  input[type=number] {
+    width: 70px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+  }
+  input:focus {
+    outline: none;
+    border-color: #ffd700;
+    background: rgba(255,255,255,0.15);
+  }
+
+  button, .btn {
+    background: linear-gradient(45deg, #ffd700, #ffed4e);
+    color: #1a1a2e;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 16px;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  button:hover, .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255,215,0,0.4);
+  }
+  .btn-danger {
+    background: linear-gradient(45deg, #e94560, #c92a3f);
+    color: #fff;
+  }
+
+  /* 테이블 */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 16px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  th {
+    background: rgba(255,215,0,0.15);
+    color: #ffd700;
+    padding: 14px;
+    text-align: left;
+  }
+  td {
+    padding: 12px 14px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+  }
+  tr:hover td { background: rgba(255,255,255,0.05); }
+
+  /* 알림/에러 */
+  .alert {
+    padding: 14px 18px;
+    border-radius: 8px;
+    margin: 16px 0;
+    font-weight: 500;
+  }
+  .alert-error {
+    background: rgba(233, 69, 96, 0.2);
+    border-left: 4px solid #e94560;
+    color: #ff8fa3;
+  }
+  .alert-success {
+    background: rgba(76, 209, 55, 0.2);
+    border-left: 4px solid #4cd137;
+    color: #6fff5a;
+  }
+
+  /* 폼 필드별 에러 (빨간색 강조) */
+  .errorlist {
+    list-style: none;
+    color: #ff8fa3;
+    background: rgba(233, 69, 96, 0.15);
+    border-left: 3px solid #e94560;
+    padding: 8px 12px;
+    margin: 4px 0 8px;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+  .helptext {
+    display: block;
+    font-size: 12px;
+    color: #aaa;
+    margin-top: 4px;
+  }
+  .rank-1 { color: #ffd700; font-weight: bold; }
+  .rank-2 { color: #c0c0c0; font-weight: bold; }
+  .rank-3 { color: #cd7f32; font-weight: bold; }
+  .card a:not(.btn) {
+  color: #ffd700;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.card a:not(.btn):hover {
+  color: #ffed4e;
+  text-decoration: underline;
+}
+.card a:not(.btn):visited {
+  color: #ffd700;
+}
+
+/* .btn 클래스를 가진 a 태그는 별도 색 강제 적용 */
+.card a.btn {
+  color: #1a1a2e !important;
+}
+
+  /* 관리자 대시보드 리스트 - 카드형 메뉴 */
+  .card ul {
+    list-style: none;
+    padding: 0;
+  }
+  .card ul li {
+    background: rgba(255, 215, 0, 0.08);
+    border: 1px solid rgba(255, 215, 0, 0.2);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 10px 0;
+    transition: all 0.3s;
+  }
+  .card ul li:hover {
+    background: rgba(255, 215, 0, 0.15);
+    transform: translateX(4px);
+  }
+  .card ul li a {
+    font-size: 18px;
+    font-weight: 500;
+    display: block;
+  }
+</style>
+</head>
 <body>
+
 <nav>
-  <a href="{% url 'lotto:index' %}">홈</a> |
-  {% if user.is_authenticated %}
-    <a href="{% url 'lotto:buy' %}">구매</a> |
-    <a href="{% url 'lotto:my_tickets' %}">내 티켓</a> |
-    <a href="{% url 'lotto:check' %}">당첨확인</a> |
-    {% if user.is_staff %}
-      <a href="{% url 'lotto:admin_dashboard' %}">관리자</a> |
+  <a href="{% url 'lotto:index' %}" class="logo">🎰 6/45 LOTTO</a>
+  <div>
+    <a href="{% url 'lotto:index' %}">홈</a>
+    {% if user.is_authenticated %}
+      <a href="{% url 'lotto:buy' %}">복권 구매</a>
+      <a href="{% url 'lotto:my_tickets' %}">내 티켓</a>
+      <a href="{% url 'lotto:check' %}">당첨 확인</a>
+      {% if user.is_staff %}
+        <a href="{% url 'lotto:admin_dashboard' %}" class="nav-admin">⚙ 관리자</a>
+      {% endif %}
+      <span class="nav-user">{{ user.username }}님</span>
+      <form method="post" action="{% url 'lotto:logout' %}" style="display:inline; margin:0;">
+        {% csrf_token %}
+        <button type="submit" style="background:none; color:#fff; padding:8px 16px; margin:0; font-weight:normal;">로그아웃</button>
+      </form>
+    {% else %}
+      <a href="{% url 'lotto:login' %}">로그인</a>
+      <a href="{% url 'lotto:signup' %}">회원가입</a>
     {% endif %}
-    {{ user.username }} (<a href="{% url 'lotto:logout' %}">로그아웃</a>)
-  {% else %}
-    <a href="{% url 'lotto:login' %}">로그인</a> |
-    <a href="{% url 'lotto:signup' %}">회원가입</a>
-  {% endif %}
+  </div>
 </nav>
-<hr>
+
+<div class="container">
 {% block content %}{% endblock %}
+</div>
+
 </body>
 </html>

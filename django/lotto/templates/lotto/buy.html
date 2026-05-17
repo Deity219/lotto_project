@@ -1,22 +1,38 @@
 {% extends 'lotto/base.html' %}
 {% block content %}
-<h1>복권 구매 - {{ current.round_no }}회</h1>
-{% if error %}<p style="color:red">{{ error }}</p>{% else %}
+<div class="card">
+  <h1><span class="emoji">🎟</span> 복권 구매 - {{ current.round_no }}회</h1>
 
-<h2>수동 구매</h2>
-<form method="post">{% csrf_token %}
-  <input type="hidden" name="mode" value="manual">
-  {% for i in "123456" %}
-    <input type="number" name="n{{ i }}" min="1" max="45" required>
-  {% endfor %}
-  <button type="submit">수동 구매</button>
-</form>
+  <p style="color:#aaa; margin-bottom:16px;">
+    <span class="emoji">📌</span> 이번 회차 보유 티켓: <span style="color:#ffd700; font-weight:bold;">{{ already_have }}</span> / {{ max_per_user }}매
+    {% if already_have >= max_per_user %}
+      <span style="color:#ff8fa3;"> (최대 매수 도달)</span>
+    {% endif %}
+  </p>
 
-<h2>자동 구매</h2>
-<form method="post">{% csrf_token %}
-  <input type="hidden" name="mode" value="auto">
-  <label>매수: <input type="number" name="count" min="1" max="5" value="1"></label>
-  <button type="submit">자동 구매</button>
-</form>
-{% endif %}
+  {% if error %}
+    <div class="alert alert-error">⚠ {{ error }}</div>
+  {% endif %}
+
+  <h2><span class="emoji">✍</span> 수동 구매</h2>
+  <p style="color:#aaa; font-size:14px;">1~45 사이의 서로 다른 6개 번호를 입력하세요.</p>
+  <form method="post">{% csrf_token %}
+    <input type="hidden" name="mode" value="manual">
+    <div style="margin:16px 0;">
+      {% for i in "123456" %}
+        <input type="number" name="n{{ i }}" min="1" max="45" required>
+      {% endfor %}
+    </div>
+    <button type="submit">수동 구매 (1,000원)</button>
+  </form>
+
+  <h2 style="margin-top:30px;"><span class="emoji">🎲</span> 자동 구매</h2>
+  <p style="color:#aaa; font-size:14px;">컴퓨터가 무작위로 번호를 선택합니다.</p>
+  <form method="post">{% csrf_token %}
+    <input type="hidden" name="mode" value="auto">
+    <label>매수 (1~5장)</label>
+    <input type="number" name="count" min="1" max="5" value="1">
+    <button type="submit">자동 구매</button>
+  </form>
+</div>
 {% endblock %}

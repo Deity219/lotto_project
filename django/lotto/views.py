@@ -12,56 +12,95 @@ def index(request):
     return render(request, 'lotto/index.html', {'latest': latest})
 
 
+from .forms import ManualTicketForm, AutoTicketForm, KoreanUserCreationForm
+
 def signup(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = KoreanUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
             return redirect('lotto:index')
     else:
-        form = UserCreationForm()
+        form = KoreanUserCreationForm()
     return render(request, 'lotto/signup.html', {'form': form})
 
 
 # 일반 사용자 기능
 @login_required
 def buy(request):
-    # 수동/자동 구매. 미추첨 상태의 최신 회차에 티켓 발급.
     current = DrawRound.objects.filter(is_drawn=False).order_by('round_no').first()
     if current is None:
         return render(request, 'lotto/buy.html',
                       {'error': '판매 중인 회차가 없습니다. 관리자에게 문의하세요.'})
 
+    error = None  # 에러 메시지
+
     if request.method == 'POST':
         mode = request.POST.get('mode')
+
         if mode == 'manual':
-            form = ManualTicketForm(request.POST)
-            if form.is_valid():
-                cd = form.cleaned_data
+            try:
+                nums = [int(request.POST.get(f'n{i}')) for i in range(1, 7)]
+            except (TypeError, ValueError):
+                error = '번호는 정수만 입력 가능합니다.'
+            else:
+                if any(n < 1 or n > 45 for n in nums):
+                    error = '번호는 1~45 사이여야 합니다.'
+                elif len(set(nums)) != 6:
+                    error = '6개 번호는 모두 달라야 합니다. 중복된 번호가 있습니다.'
+                else:
+                    # 매수 제한 체크
+                    MAX_PER_USER = 5
+                    already_have = Ticket.objects.filter(
+                        user=request.user, draw_round=current
+                    ).count()
+                    if already_have >= MAX_PER_USER:
+                        error = f'이번 회차에는 이미 최대({MAX_PER_USER}매)까지 구매하셨습니다.'
+                    else:
+                        Ticket.objects.create(
+                            user=request.user, draw_round=current,
+                            n1=nums[0], n2=nums[1], n3=nums[2],
+                            n4=nums[3], n5=nums[4], n6=nums[5],
+                            pick_type=Ticket.PICK_MANUAL,
+                        )
+                        return redirect('lotto:my_tickets')
+
+        elif mode == 'auto':
+            try:
+                count = int(request.POST.get('count', 1))
+            except ValueError:
+                count = 1
+            count = max(1, min(5, count))  # 1회 요청당 1~5매 제한
+
+            # 한 회차당 한 사람이 보유 가능한 최대 매수 (예: 5매)
+            MAX_PER_USER = 5
+            already_have = Ticket.objects.filter(user=request.user, draw_round=current).count()
+
+        if already_have + count > MAX_PER_USER:
+            remaining = MAX_PER_USER - already_have
+            if remaining <= 0:
+                error = f'이번 회차에는 이미 최대({MAX_PER_USER}매)까지 구매하셨습니다.'
+            else:
+                error = f'이번 회차에는 최대 {MAX_PER_USER}매까지 구매 가능합니다. (현재 {already_have}매 보유, {remaining}매 더 구매 가능)'
+        else:
+            for _ in range(count):
+                nums = Ticket.auto_pick()
                 Ticket.objects.create(
                     user=request.user, draw_round=current,
-                    n1=cd['n1'], n2=cd['n2'], n3=cd['n3'],
-                    n4=cd['n4'], n5=cd['n5'], n6=cd['n6'],
-                    pick_type=Ticket.PICK_MANUAL,
+                    n1=nums[0], n2=nums[1], n3=nums[2],
+                    n4=nums[3], n5=nums[4], n6=nums[5],
+                    pick_type=Ticket.PICK_AUTO,
                 )
-                return redirect('lotto:my_tickets')
-        else:  # auto
-            form = AutoTicketForm(request.POST)
-            if form.is_valid():
-                for _ in range(form.cleaned_data['count']):
-                    nums = Ticket.auto_pick()
-                    Ticket.objects.create(
-                        user=request.user, draw_round=current,
-                        n1=nums[0], n2=nums[1], n3=nums[2],
-                        n4=nums[3], n5=nums[4], n6=nums[5],
-                        pick_type=Ticket.PICK_AUTO,
-                    )
-                return redirect('lotto:my_tickets')
+            return redirect('lotto:my_tickets')
+
     return render(request, 'lotto/buy.html', {
         'current': current,
-        'manual_form': ManualTicketForm(),
-        'auto_form': AutoTicketForm(),
+        'error': error,
+        'already_have': Ticket.objects.filter(
+            user=request.user, draw_round=current
+        ).count(),
+        'max_per_user': 5,
     })
 
 

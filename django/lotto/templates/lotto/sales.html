@@ -1,5 +1,6 @@
 {% extends 'lotto/base.html' %}
 {% block content %}
+<div class="card">
 <h1>판매 내역</h1>
 <table border="1">
 <tr><th>회차</th><th>판매 매수</th><th>매출(원)</th></tr>
@@ -8,4 +9,5 @@
     <td>{{ r.cnt }}</td><td>{{ r.revenue }}</td></tr>
 {% endfor %}
 </table>
+</div>
 {% endblock %}

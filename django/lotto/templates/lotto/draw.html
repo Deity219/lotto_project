@@ -1,5 +1,6 @@
 {% extends 'lotto/base.html' %}
 {% block content %}
+<div class="card">
 <h1>추첨 실행</h1>
 <h2>미추첨 회차</h2>
 {% for r in pending %}
@@ -16,4 +17,5 @@
     + B{{ r.bonus }} ({{ r.draw_date|date:"Y-m-d H:i" }})</li>
 {% endfor %}
 </ul>
+</div>
 {% endblock %}

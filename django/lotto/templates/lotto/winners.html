@@ -1,6 +1,7 @@
 {% extends 'lotto/base.html' %}
 {% block content %}
-<h1>당첨 내역</h1>
+<div class="card">
+  <h1><span class="emoji">🏆</span> 당첨 내역</h1>
 <table border="1">
 <tr><th>회차</th><th>사용자</th><th>등수</th><th>당첨금</th><th>번호</th></tr>
 {% for t in winners %}
@@ -13,4 +14,5 @@
 </tr>
 {% endfor %}
 </table>
+</div>
 {% endblock %}
